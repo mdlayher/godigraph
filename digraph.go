@@ -35,8 +35,7 @@ func New() *Digraph {
 	}
 }
 
-// AddVertex tries to add a new vertex to the root of the adjacency list on the digraph,
-// returning true if a new vertex is added, or false if it already exists
+// AddVertex tries to add a new vertex to the root of the adjacency list on the digraph
 func (d *Digraph) AddVertex(vertex Vertex) error {
 	// Check for a previous, identical vertex
 	if _, found := d.adjList[vertex]; found {
@@ -50,8 +49,7 @@ func (d *Digraph) AddVertex(vertex Vertex) error {
 	return nil
 }
 
-// AddEdge tries to add a new edge between two vertices on the adjacency list,
-// returning true if a new edge is added, or false if it already exists
+// AddEdge tries to add a new edge between two vertices on the adjacency list
 func (d *Digraph) AddEdge(source Vertex, target Vertex) error {
 	// Ensure vertices are not identical
 	if source == target {
@@ -92,7 +90,7 @@ func (d *Digraph) AddEdge(source Vertex, target Vertex) error {
 var discovered map[Vertex]bool
 
 // DepthFirstSearch searches the digraph for the target vertex, using the Depth-First
-// Search algorithm
+// Search algorithm, and returning true if a path to the target is found
 func (d *Digraph) DepthFirstSearch(source Vertex, target Vertex) bool {
 	// Clear discovery map
 	discovered = map[Vertex]bool{}
