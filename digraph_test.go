@@ -116,3 +116,36 @@ func TestDepthFirstSearch(t *testing.T) {
 		}
 	}
 }
+
+// TestEdgeCount verifies that the EdgeCount method is working properly
+func TestEdgeCount(t *testing.T) {
+	log.Println("TestEdgeCount()")
+
+	// Create a digraph
+	graph := New()
+
+	// Generate some known paths, along with some which will NOT add new edges
+	// TODO: if RemoveEdge methods are added, check those in this test as well
+	var paths = []struct{
+		source interface{}
+		target interface{}
+	}{
+		{1, 2}, {1, 5},
+		{2, 3}, {2, 5},
+		{5, 2}, {2, 1},
+	}
+
+	// Create edges, check edge count
+	edgeCount := 0
+	for _, p := range paths {
+		// No error means an edge should have been added
+		if err := graph.AddEdge(p.source, p.target); err == nil {
+			edgeCount++
+		}
+
+		// Verify edge count matches the expected count
+		if edgeCount != graph.EdgeCount() {
+			t.Fatalf("graph.EdgeCount() - unexpected result: %d != %d", edgeCount, graph.EdgeCount())
+		}
+	}
+}
