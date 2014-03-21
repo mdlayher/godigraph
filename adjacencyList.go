@@ -41,7 +41,7 @@ func (a *AdjacencyList) Adjacent() []Vertex {
 // returning true if the vertex is found, or false if it is not
 func (a *AdjacencyList) Search(target Vertex) *list.Element {
 	// Ensure the list is not empty
-	if a.list.Len() == 0 {
+	if a.list == nil || a.list.Len() == 0 {
 		return nil
 	}
 
