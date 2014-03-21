@@ -39,7 +39,7 @@ func TestAddVertex(t *testing.T) {
 func TestAddEdge(t *testing.T) {
 	log.Println("TestAddEdge()")
 
-	// Create a digraph, add root vertex
+	// Create a digraph
 	graph := New()
 
 	// Create a table of tests and expected error results
@@ -65,6 +65,54 @@ func TestAddEdge(t *testing.T) {
 	for _, test := range tests {
 		if err := graph.AddEdge(test.source, test.target); err != test.result {
 			t.Fatalf("graph.AddEdge(%d, %d) - unexpected result: %s", test.source, test.target, err.Error())
+		}
+	}
+}
+
+// TestDepthFirstSearch verifies that the DepthFirstSearch method is working properly
+func TestDepthFirstSearch(t *testing.T) {
+	log.Println("TestDepthFirstSearch()")
+
+	// Create a digraph
+	graph := New()
+
+	// Generate some known paths
+	var paths = []struct{
+		source interface{}
+		target interface{}
+	}{
+		{1, 2}, {1, 5},
+		{2, 3}, {2, 5},
+		{3, 4}, {3, 6},
+		{4, 5}, {4, 6},
+		{5, 6},
+	}
+
+	// Create edges
+	for _, p := range paths {
+		graph.AddEdge(p.source, p.target)
+	}
+
+	// Create a table of tests and expected boolean results
+	var tests = []struct{
+		source interface{}
+		target interface{}
+		result bool
+	}{
+		// Paths reachable between source and target
+		{1, 2, true},
+		{1, 4, true},
+		{2, 6, true},
+		// Paths NOT reachable between source and target
+		{6, 3, false},
+		{4, 1, false},
+		{5, 2, false},
+	}
+
+	// Iterate test table, check results
+	for _, test := range tests {
+		if found := graph.DepthFirstSearch(test.source, test.target); found != test.result {
+			t.Fatalf("graph.DepthFirstSearch(%d, %d) - unexpected result: %t", test.source, test.target, test.result)
 		}
 	}
 }
