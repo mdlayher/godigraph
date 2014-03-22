@@ -16,6 +16,9 @@ var (
 
 	// ErrVertexExists is returned when a vertex with the same value already exists
 	ErrVertexExists = errors.New("digraph: vertex already exists")
+
+	// ErrVertexNotExists is returned when a vertex is used which does not exist
+	ErrVertexNotExists = errors.New("digraph: vertex does not exist")
 )
 
 // Vertex represents a vertex or "node" in the digraph
@@ -152,7 +155,7 @@ func (d *Digraph) HasEdge(source Vertex, target Vertex) bool {
 func (d *Digraph) Print(root Vertex) error {
 	// Check if the vertex actually exists
 	if _, ok := d.adjList[root]; !ok {
-		return errors.New("digraph: root node does not exist, cannot print graph")
+		return ErrVertexNotExists
 	}
 
 	// Begin recursive printing at the specified root vertex
