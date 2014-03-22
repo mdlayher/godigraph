@@ -152,21 +152,20 @@ func (d *Digraph) HasEdge(source Vertex, target Vertex) bool {
 }
 
 // Print displays a printed "tree" of the digraph to the console
-func (d *Digraph) Print(root Vertex) error {
+func (d *Digraph) Print(root Vertex) (string, error) {
 	// Check if the vertex actually exists
 	if _, ok := d.adjList[root]; !ok {
-		return ErrVertexNotExists
+		return "", ErrVertexNotExists
 	}
 
 	// Begin recursive printing at the specified root vertex
-	d.printRecursive(root, "")
-	return nil
+	return d.printRecursive(root, ""), nil
 }
 
 // printRecursive handles the printing of each vertex in "tree" form
-func (d *Digraph) printRecursive(vertex Vertex, prefix string) {
+func (d *Digraph) printRecursive(vertex Vertex, prefix string) string {
 	// Print the current vertex
-	fmt.Println(prefix, "-", vertex)
+	str := fmt.Sprintf("%s - %v\n", prefix, vertex)
 
 	// Get the current adjacency list, get adjacent vertices
 	adjList := d.adjList[vertex]
@@ -176,12 +175,14 @@ func (d *Digraph) printRecursive(vertex Vertex, prefix string) {
 	for i, v := range adjacent {
 		// If last iteration, don't add a pipe character
 		if i == len(adjacent)-1 {
-			d.printRecursive(v, prefix+"    ")
+			str = str + d.printRecursive(v, prefix+"    ")
 		} else {
 			// Add pipe character to show multiple items belong to same parent
-			d.printRecursive(v, prefix+"   |")
+			str = str + d.printRecursive(v, prefix+"   |")
 		}
 	}
+
+	return str
 }
 
 // VertexCount returns the number of vertices in the digraph

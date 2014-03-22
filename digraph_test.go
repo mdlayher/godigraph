@@ -1,6 +1,7 @@
 package digraph
 
 import (
+	"fmt"
 	"log"
 	"testing"
 )
@@ -243,9 +244,13 @@ func TestPrint(t *testing.T) {
 
 	// Iterate test table, check results
 	for _, test := range tests {
-		if err := graph.Print(test.root); err != test.result {
+		tree, err := graph.Print(test.root)
+		if err != test.result {
 			t.Fatalf("graph.Print(%d) - unexpected result: %s", test.root, err.Error())
 		}
+
+		// Print the tree
+		fmt.Println(tree)
 	}
 }
 
