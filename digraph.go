@@ -130,6 +130,11 @@ func (d *Digraph) EdgeCount() int {
 // HasEdge determines if the digraph has an existing edge between source and target,
 // returning true if it does, or false if it does not
 func (d *Digraph) HasEdge(source Vertex, target Vertex) bool {
+	// Check if the source vertex exists
+	if _, found := d.adjList[source]; !found {
+		return false
+	}
+
 	// Retrieve adjacency list for this source
 	adjList := d.adjList[source]
 
