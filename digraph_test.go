@@ -130,8 +130,10 @@ func TestEdgeCount(t *testing.T) {
 		source interface{}
 		target interface{}
 	}{
+		// New edge will be created
 		{1, 2}, {1, 5},
 		{2, 3}, {2, 5},
+		// New edge will NOT be created
 		{5, 2}, {2, 1},
 	}
 
@@ -146,6 +148,58 @@ func TestEdgeCount(t *testing.T) {
 		// Verify edge count matches the expected count
 		if edgeCount != graph.EdgeCount() {
 			t.Fatalf("graph.EdgeCount() - unexpected result: %d != %d", edgeCount, graph.EdgeCount())
+		}
+	}
+}
+
+// TestHasEdge verifies that the HasEdge method is working properly
+func TestHasEdge(t *testing.T) {
+	log.Println("TestHasEdge()")
+
+	// Create a digraph
+	graph := New()
+
+	// Generate some known paths, along with some which will NOT add new edges
+	var paths = []struct{
+		source interface{}
+		target interface{}
+	}{
+		// New edge will be created
+		{1, 2},
+		{1, 5},
+		{2, 3},
+		{2, 5},
+		// New edge will NOT be created
+		{5, 2},
+		{2, 1},
+	}
+
+	// Build paths
+	for _, p := range paths {
+		graph.AddEdge(p.source, p.target)
+	}
+
+	// Create a table of tests and expected boolean results
+	// TODO: if RemoveEdge methods are added, check those in this test as well
+	var tests = []struct{
+		source interface{}
+		target interface{}
+		result bool
+	}{
+		// Existing edges
+		{1, 2, true},
+		{1, 5, true},
+		{2, 5, true},
+		// Non-existant edges
+		{6, 3, false},
+		{4, 1, false},
+		{5, 1, false},
+	}
+
+	// Iterate test table, check results
+	for _, test := range tests {
+		if found := graph.HasEdge(test.source, test.target); found != test.result {
+			t.Fatalf("graph.HasEdge(%d, %d) - unexpected result: %t", test.source, test.target, test.result)
 		}
 	}
 }
