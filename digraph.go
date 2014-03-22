@@ -151,6 +151,9 @@ func (d *Digraph) HasEdge(source Vertex, target Vertex) bool {
 	return false
 }
 
+// printed maps out which vertices have been printed already
+var printed map[Vertex]bool
+
 // Print displays a printed "tree" of the digraph to the console
 func (d *Digraph) Print(root Vertex) (string, error) {
 	// Check if the vertex actually exists
@@ -158,14 +161,14 @@ func (d *Digraph) Print(root Vertex) (string, error) {
 		return "", ErrVertexNotExists
 	}
 
-	// Clear discovery map
-	discovered = map[Vertex]bool{}
+	// Clear printed map
+	printed = map[Vertex]bool{}
 
 	// Begin recursive printing at the specified root vertex
 	tree := d.printRecursive(root, "")
 
-	// Clear discovery map
-	discovered = map[Vertex]bool{}
+	// Clear printed map
+	printed = map[Vertex]bool{}
 
 	return tree, nil
 
@@ -182,13 +185,13 @@ func (d *Digraph) printRecursive(vertex Vertex, prefix string) string {
 
 	// Iterate all adjacent vertices
 	for i, v := range adjacent {
-		// Skip vertices which have already been discovered
-		if discovered[v] {
+		// Skip vertices which have already been printed
+		if printed[v] {
 			continue
 		}
 
-		// Mark new ones as discovered
-		discovered[v] = true
+		// Mark new ones as printed
+		printed[v] = true
 
 		// If last iteration, don't add a pipe character
 		if i == len(adjacent)-1 {
