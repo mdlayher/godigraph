@@ -203,3 +203,48 @@ func TestHasEdge(t *testing.T) {
 		}
 	}
 }
+
+// TestPrint verifies that the Print method is working properly
+func TestPrint(t *testing.T) {
+	log.Println("TestPrint()")
+
+	// Create a digraph
+	graph := New()
+
+	// Generate some known paths
+	var paths = []struct {
+		source interface{}
+		target interface{}
+	}{
+		{1, 2}, {1, 4}, {1, 6},
+		{2, 3}, {2, 4}, {2, 5},
+		{3, 4},
+		{4, 7}, {4, 8},
+	}
+
+	// Build paths
+	for _, p := range paths {
+		graph.AddEdge(p.source, p.target)
+	}
+
+	// Create a table of tests and expected error results
+	var tests = []struct {
+		root   interface{}
+		result error
+	}{
+		// Existing root vertices
+		{1, nil},
+		{2, nil},
+		{4, nil},
+		// Non-existant root vertices
+		{9, ErrVertexNotExists},
+		{10, ErrVertexNotExists},
+	}
+
+	// Iterate test table, check results
+	for _, test := range tests {
+		if err := graph.Print(test.root); err != test.result {
+			t.Fatalf("graph.Print(%d) - unexpected result: %s", test.root, err.Error())
+		}
+	}
+}
