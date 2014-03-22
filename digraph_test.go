@@ -13,7 +13,7 @@ func TestAddVertex(t *testing.T) {
 	graph := New()
 
 	// Create a table of tests and expected error results
-	var tests = []struct{
+	var tests = []struct {
 		vertex interface{}
 		result error
 	}{
@@ -77,7 +77,7 @@ func TestDepthFirstSearch(t *testing.T) {
 	graph := New()
 
 	// Generate some known paths
-	var paths = []struct{
+	var paths = []struct {
 		source interface{}
 		target interface{}
 	}{
@@ -94,7 +94,7 @@ func TestDepthFirstSearch(t *testing.T) {
 	}
 
 	// Create a table of tests and expected boolean results
-	var tests = []struct{
+	var tests = []struct {
 		source interface{}
 		target interface{}
 		result bool
@@ -126,7 +126,7 @@ func TestEdgeCount(t *testing.T) {
 
 	// Generate some known paths, along with some which will NOT add new edges
 	// TODO: if RemoveEdge methods are added, check those in this test as well
-	var paths = []struct{
+	var paths = []struct {
 		source interface{}
 		target interface{}
 	}{
@@ -160,7 +160,7 @@ func TestHasEdge(t *testing.T) {
 	graph := New()
 
 	// Generate some known paths, along with some which will NOT add new edges
-	var paths = []struct{
+	var paths = []struct {
 		source interface{}
 		target interface{}
 	}{
@@ -181,7 +181,7 @@ func TestHasEdge(t *testing.T) {
 
 	// Create a table of tests and expected boolean results
 	// TODO: if RemoveEdge methods are added, check those in this test as well
-	var tests = []struct{
+	var tests = []struct {
 		source interface{}
 		target interface{}
 		result bool
