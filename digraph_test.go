@@ -248,3 +248,29 @@ func TestPrint(t *testing.T) {
 		}
 	}
 }
+
+// TestVertexCount verifies that the VertexCount method is working properly
+func TestVertexCount(t *testing.T) {
+	log.Println("TestVertexCount()")
+
+	// Create a digraph
+	graph := New()
+
+	// Generate some vertices, along with some which will NOT add new vertices
+	// TODO: if RemoveVertex methods are added, check those in this test as well
+	var vertices = []Vertex{1, 2, 3, 1, 1, 4, 5, 6}
+
+	// Create vertices, check vertex count
+	vertexCount := 0
+	for _, v := range vertices {
+		// No error means an vertex should have been added
+		if err := graph.AddVertex(v); err == nil {
+			vertexCount++
+		}
+
+		// Verify vertex count matches the expected count
+		if vertexCount != graph.VertexCount() {
+			t.Fatalf("graph.VertexCount() - unexpected result: %d != %d", vertexCount, graph.VertexCount())
+		}
+	}
+}
