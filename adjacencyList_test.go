@@ -63,9 +63,9 @@ func TestSearch(t *testing.T) {
 		// If element is nil and it should not be, test fails
 		if element == nil && test.result != nil {
 			t.Fatalf("adjList.Search(%d) - unexpected result: nil", test.vertex)
-		} else if element != nil && element.Value != test.result {
+		} else if element != nil && element != test.result {
 			// If element is not nil, but is value does not match, test fails
-			t.Fatalf("adjList.Search(%d) - unexpected result: %v", test.vertex, element.Value)
+			t.Fatalf("adjList.Search(%d) - unexpected result: %v", test.vertex, element)
 		}
 	}
 }

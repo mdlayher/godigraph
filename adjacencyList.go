@@ -38,7 +38,7 @@ func (a *AdjacencyList) Adjacent() []Vertex {
 }
 
 // Search traverses the adjancency list and attempts to find a specified vertex
-func (a *AdjacencyList) Search(target Vertex) *list.Element {
+func (a *AdjacencyList) Search(target Vertex) Vertex {
 	// Ensure the list is not empty
 	if a.list == nil || a.list.Len() == 0 {
 		return nil
@@ -47,7 +47,7 @@ func (a *AdjacencyList) Search(target Vertex) *list.Element {
 	// Get front node, check immediately if it's the correct one
 	element := a.list.Front()
 	if element.Value == target {
-		return element
+		return element.Value
 	}
 
 	// Iterate from the front of the list
@@ -60,7 +60,7 @@ func (a *AdjacencyList) Search(target Vertex) *list.Element {
 
 		// Check for result
 		if element.Value == target {
-			return element
+			return element.Value
 		}
 	}
 
