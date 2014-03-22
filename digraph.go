@@ -158,8 +158,17 @@ func (d *Digraph) Print(root Vertex) (string, error) {
 		return "", ErrVertexNotExists
 	}
 
+	// Clear discovery map
+	discovered = map[Vertex]bool{}
+
 	// Begin recursive printing at the specified root vertex
-	return d.printRecursive(root, ""), nil
+	tree := d.printRecursive(root, "")
+
+	// Clear discovery map
+	discovered = map[Vertex]bool{}
+
+	return tree, nil
+
 }
 
 // printRecursive handles the printing of each vertex in "tree" form
@@ -173,6 +182,14 @@ func (d *Digraph) printRecursive(vertex Vertex, prefix string) string {
 
 	// Iterate all adjacent vertices
 	for i, v := range adjacent {
+		// Skip vertices which have already been discovered
+		if discovered[v] {
+			continue
+		}
+
+		// Mark new ones as discovered
+		discovered[v] = true
+
 		// If last iteration, don't add a pipe character
 		if i == len(adjacent)-1 {
 			str = str + d.printRecursive(v, prefix+"    ")
