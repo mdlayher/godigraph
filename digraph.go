@@ -155,7 +155,7 @@ func (d *Digraph) HasEdge(source Vertex, target Vertex) bool {
 var printed map[Vertex]bool
 
 // Print displays a printed "tree" of the digraph to the console
-func (d *Digraph) Print(root Vertex) (string, error) {
+func (d *Digraph) Print(root Vertex, all bool) (string, error) {
 	// Check if the vertex actually exists
 	if _, ok := d.adjList[root]; !ok {
 		return "", ErrVertexNotExists
@@ -165,7 +165,7 @@ func (d *Digraph) Print(root Vertex) (string, error) {
 	printed = map[Vertex]bool{}
 
 	// Begin recursive printing at the specified root vertex
-	tree := d.printRecursive(root, "")
+	tree := d.printRecursive(root, "", all)
 
 	// Clear printed map
 	printed = map[Vertex]bool{}
@@ -175,7 +175,7 @@ func (d *Digraph) Print(root Vertex) (string, error) {
 }
 
 // printRecursive handles the printing of each vertex in "tree" form
-func (d *Digraph) printRecursive(vertex Vertex, prefix string) string {
+func (d *Digraph) printRecursive(vertex Vertex, prefix string, all bool) string {
 	// Print the current vertex
 	str := fmt.Sprintf("%s - %v\n", prefix, vertex)
 
@@ -185,20 +185,22 @@ func (d *Digraph) printRecursive(vertex Vertex, prefix string) string {
 
 	// Iterate all adjacent vertices
 	for i, v := range adjacent {
-		// Skip vertices which have already been printed
-		if printed[v] {
-			continue
-		}
+		// If not printing all, skip vertices which have already been printed
+		if !all {
+			if printed[v] {
+				continue
+			}
 
-		// Mark new ones as printed
-		printed[v] = true
+			// Mark new ones as printed
+			printed[v] = true
+		}
 
 		// If last iteration, don't add a pipe character
 		if i == len(adjacent)-1 {
-			str = str + d.printRecursive(v, prefix+"    ")
+			str = str + d.printRecursive(v, prefix+"    ", all)
 		} else {
 			// Add pipe character to show multiple items belong to same parent
-			str = str + d.printRecursive(v, prefix+"   |")
+			str = str + d.printRecursive(v, prefix+"   |", all)
 		}
 	}
 

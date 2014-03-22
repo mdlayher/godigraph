@@ -244,7 +244,7 @@ func TestPrint(t *testing.T) {
 
 	// Iterate test table, check results
 	for _, test := range tests {
-		tree, err := graph.Print(test.root)
+		tree, err := graph.Print(test.root, false)
 		if err != test.result {
 			t.Fatalf("graph.Print(%d) - unexpected result: %s", test.root, err.Error())
 		}
