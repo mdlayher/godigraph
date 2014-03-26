@@ -26,7 +26,7 @@ type Vertex interface{}
 
 // Digraph represents a "digraph", or directed graph data structure
 type Digraph struct {
-	sync.RWMutex
+	m           sync.RWMutex
 	adjList     map[Vertex]*AdjacencyList
 	edgeCount   int
 	vertexCount int
@@ -42,8 +42,8 @@ func New() *Digraph {
 // AddVertex tries to add a new vertex to the root of the adjacency list on the digraph
 func (d *Digraph) AddVertex(vertex Vertex) error {
 	// Lock digraph while adding vertex
-	d.Lock()
-	defer d.Unlock()
+	d.m.Lock()
+	defer d.m.Unlock()
 
 	// Check for a previous, identical vertex
 	if _, found := d.adjList[vertex]; found {
@@ -82,8 +82,8 @@ func (d *Digraph) AddEdge(source Vertex, target Vertex) error {
 	}
 
 	// Lock digraph while adding edge
-	d.Lock()
-	defer d.Unlock()
+	d.m.Lock()
+	defer d.m.Unlock()
 
 	// Retrieve adjacency list
 	adjList := d.adjList[source]
@@ -105,8 +105,8 @@ var discovered map[Vertex]bool
 // Search algorithm, and returning true if a path to the target is found
 func (d *Digraph) DepthFirstSearch(source Vertex, target Vertex) bool {
 	// Lock completely while performing DFS
-	d.Lock()
-	defer d.Unlock()
+	d.m.Lock()
+	defer d.m.Unlock()
 
 	// Clear discovery map
 	discovered = map[Vertex]bool{}
@@ -140,8 +140,8 @@ func (d *Digraph) dfs(target Vertex) {
 
 // EdgeCount returns the number of edges in the digraph
 func (d *Digraph) EdgeCount() int {
-	d.Lock()
-	defer d.Unlock()
+	d.m.Lock()
+	defer d.m.Unlock()
 	return d.edgeCount
 }
 
@@ -149,8 +149,8 @@ func (d *Digraph) EdgeCount() int {
 // returning true if it does, or false if it does not
 func (d *Digraph) HasEdge(source Vertex, target Vertex) bool {
 	// Lock digraph while checking for edges
-	d.Lock()
-	defer d.Unlock()
+	d.m.Lock()
+	defer d.m.Unlock()
 
 	// Check if the source vertex exists
 	if _, found := d.adjList[source]; !found {
@@ -176,8 +176,8 @@ var printed map[Vertex]bool
 // Print displays a printed "tree" of the digraph to the console
 func (d *Digraph) Print(root Vertex, all bool) (string, error) {
 	// Lock completely during print process
-	d.Lock()
-	defer d.Unlock()
+	d.m.Lock()
+	defer d.m.Unlock()
 
 	// Check if the vertex actually exists
 	if _, ok := d.adjList[root]; !ok {
@@ -231,7 +231,7 @@ func (d *Digraph) printRecursive(vertex Vertex, prefix string, all bool) string 
 
 // VertexCount returns the number of vertices in the digraph
 func (d *Digraph) VertexCount() int {
-	d.Lock()
-	defer d.Unlock()
+	d.m.Lock()
+	defer d.m.Unlock()
 	return d.vertexCount
 }

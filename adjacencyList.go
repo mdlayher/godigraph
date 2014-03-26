@@ -7,7 +7,7 @@ import (
 
 // AdjacencyList represents a linked-list of vertices connected by edges in the digraph
 type AdjacencyList struct {
-	sync.RWMutex
+	m    sync.RWMutex
 	list *list.List
 }
 
@@ -21,8 +21,8 @@ func NewAdjacencyList() *AdjacencyList {
 // Adjacent returns all vertices from the adjacency list
 func (a *AdjacencyList) Adjacent() []Vertex {
 	// Make sure list is not being modified while finding adjacent vertices
-	a.RLock()
-	defer a.RUnlock()
+	a.m.RLock()
+	defer a.m.RUnlock()
 
 	// Slice of vertices to return
 	vertices := make([]Vertex, 0)
@@ -53,8 +53,8 @@ func (a *AdjacencyList) Adjacent() []Vertex {
 // Search traverses the adjancency list and attempts to find a specified vertex
 func (a *AdjacencyList) Search(target Vertex) Vertex {
 	// Make sure list is not being modified while searching
-	a.RLock()
-	defer a.RUnlock()
+	a.m.RLock()
+	defer a.m.RUnlock()
 
 	// Ensure the list is not empty
 	if a.list == nil || a.list.Len() == 0 {
