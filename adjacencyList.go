@@ -2,15 +2,28 @@ package digraph
 
 import (
 	"container/list"
+	"sync"
 )
 
 // AdjacencyList represents a linked-list of vertices connected by edges in the digraph
 type AdjacencyList struct {
+	sync.RWMutex
 	list *list.List
+}
+
+// NewAdjacencyList returns a new AdjacencyList with its internal list initialized
+func NewAdjacencyList() *AdjacencyList {
+	return &AdjacencyList{
+		list: list.New(),
+	}
 }
 
 // Adjacent returns all vertices from the adjacency list
 func (a *AdjacencyList) Adjacent() []Vertex {
+	// Make sure list is not being modified while finding adjacent vertices
+	a.RLock()
+	defer a.RUnlock()
+
 	// Slice of vertices to return
 	vertices := make([]Vertex, 0)
 
@@ -39,6 +52,10 @@ func (a *AdjacencyList) Adjacent() []Vertex {
 
 // Search traverses the adjancency list and attempts to find a specified vertex
 func (a *AdjacencyList) Search(target Vertex) Vertex {
+	// Make sure list is not being modified while searching
+	a.RLock()
+	defer a.RUnlock()
+
 	// Ensure the list is not empty
 	if a.list == nil || a.list.Len() == 0 {
 		return nil

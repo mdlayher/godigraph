@@ -1,9 +1,9 @@
 package digraph
 
 import (
-	"container/list"
 	"errors"
 	"fmt"
+	"sync"
 )
 
 var (
@@ -26,7 +26,8 @@ type Vertex interface{}
 
 // Digraph represents a "digraph", or directed graph data structure
 type Digraph struct {
-	adjList     map[Vertex]AdjacencyList
+	sync.RWMutex
+	adjList     map[Vertex]*AdjacencyList
 	edgeCount   int
 	vertexCount int
 }
@@ -34,19 +35,23 @@ type Digraph struct {
 // New creates a new acyclic Digraph, and initializes its adjacency list
 func New() *Digraph {
 	return &Digraph{
-		adjList: map[Vertex]AdjacencyList{},
+		adjList: map[Vertex]*AdjacencyList{},
 	}
 }
 
 // AddVertex tries to add a new vertex to the root of the adjacency list on the digraph
 func (d *Digraph) AddVertex(vertex Vertex) error {
+	// Lock digraph while adding vertex
+	d.Lock()
+	defer d.Unlock()
+
 	// Check for a previous, identical vertex
 	if _, found := d.adjList[vertex]; found {
 		return ErrVertexExists
 	}
 
 	// Add the vertex to the adjacency list, initialize a new linked-list
-	d.adjList[vertex] = AdjacencyList{list.New()}
+	d.adjList[vertex] = NewAdjacencyList()
 	d.vertexCount++
 
 	return nil
@@ -76,6 +81,10 @@ func (d *Digraph) AddEdge(source Vertex, target Vertex) error {
 		return ErrCycle
 	}
 
+	// Lock digraph while adding edge
+	d.Lock()
+	defer d.Unlock()
+
 	// Retrieve adjacency list
 	adjList := d.adjList[source]
 
@@ -95,6 +104,10 @@ var discovered map[Vertex]bool
 // DepthFirstSearch searches the digraph for the target vertex, using the Depth-First
 // Search algorithm, and returning true if a path to the target is found
 func (d *Digraph) DepthFirstSearch(source Vertex, target Vertex) bool {
+	// Lock completely while performing DFS
+	d.Lock()
+	defer d.Unlock()
+
 	// Clear discovery map
 	discovered = map[Vertex]bool{}
 
@@ -127,12 +140,18 @@ func (d *Digraph) dfs(target Vertex) {
 
 // EdgeCount returns the number of edges in the digraph
 func (d *Digraph) EdgeCount() int {
+	d.Lock()
+	defer d.Unlock()
 	return d.edgeCount
 }
 
 // HasEdge determines if the digraph has an existing edge between source and target,
 // returning true if it does, or false if it does not
 func (d *Digraph) HasEdge(source Vertex, target Vertex) bool {
+	// Lock digraph while checking for edges
+	d.Lock()
+	defer d.Unlock()
+
 	// Check if the source vertex exists
 	if _, found := d.adjList[source]; !found {
 		return false
@@ -156,6 +175,10 @@ var printed map[Vertex]bool
 
 // Print displays a printed "tree" of the digraph to the console
 func (d *Digraph) Print(root Vertex, all bool) (string, error) {
+	// Lock completely during print process
+	d.Lock()
+	defer d.Unlock()
+
 	// Check if the vertex actually exists
 	if _, ok := d.adjList[root]; !ok {
 		return "", ErrVertexNotExists
@@ -171,7 +194,6 @@ func (d *Digraph) Print(root Vertex, all bool) (string, error) {
 	printed = map[Vertex]bool{}
 
 	return tree, nil
-
 }
 
 // printRecursive handles the printing of each vertex in "tree" form
@@ -209,5 +231,7 @@ func (d *Digraph) printRecursive(vertex Vertex, prefix string, all bool) string 
 
 // VertexCount returns the number of vertices in the digraph
 func (d *Digraph) VertexCount() int {
+	d.Lock()
+	defer d.Unlock()
 	return d.vertexCount
 }

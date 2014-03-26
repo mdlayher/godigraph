@@ -1,7 +1,6 @@
 package digraph
 
 import (
-	"container/list"
 	"log"
 	"testing"
 )
@@ -11,7 +10,7 @@ func TestAdjacent(t *testing.T) {
 	log.Println("TestAdjacent()")
 
 	// Create an adjacency list
-	adjList := AdjacencyList{list.New()}
+	adjList := NewAdjacencyList()
 
 	// Generate some adjacent vertices for the list
 	elements := []Vertex{1, 2, 3, 4, 5, 6}
@@ -32,7 +31,7 @@ func TestSearch(t *testing.T) {
 	log.Println("TestSearch()")
 
 	// Create an adjacency list
-	adjList := AdjacencyList{list.New()}
+	adjList := NewAdjacencyList()
 
 	// Generate some adjacent vertices for the list
 	elements := []Vertex{1, 2, 3}
