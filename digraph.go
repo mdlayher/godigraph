@@ -31,6 +31,7 @@ type Digraph struct {
 	m           sync.RWMutex
 	adjList     map[Vertex]*AdjacencyList
 	edgeCount   int
+	root        Vertex
 	vertexCount int
 }
 
@@ -50,6 +51,11 @@ func (d *Digraph) AddVertex(vertex Vertex) error {
 	// Check for a previous, identical vertex
 	if _, found := d.adjList[vertex]; found {
 		return ErrVertexExists
+	}
+
+	// Check if this vertex is the first to be added to the digraph (the root)
+	if d.root == nil {
+		d.root = vertex
 	}
 
 	// Add the vertex to the adjacency list, initialize a new linked-list
@@ -218,6 +224,16 @@ func (d *Digraph) printRecursive(printed *set.Set, vertex Vertex, prefix string,
 	}
 
 	return str
+}
+
+// String retruns a string representation of the digraph, from the first vertex or "root"
+func (d *Digraph) String() string {
+	out, err := d.Print(d.root, false)
+	if err != nil {
+		return ""
+	}
+
+	return out
 }
 
 // VertexCount returns the number of vertices in the digraph
