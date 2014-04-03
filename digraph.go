@@ -4,6 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"sync"
+
+	"github.com/mdlayher/goset"
 )
 
 var (
@@ -98,9 +100,6 @@ func (d *Digraph) AddEdge(source Vertex, target Vertex) error {
 	return nil
 }
 
-// discovered maps out which vertices have been discovered using Depth-First Search
-var discovered map[Vertex]bool
-
 // DepthFirstSearch searches the digraph for the target vertex, using the Depth-First
 // Search algorithm, and returning true if a path to the target is found
 func (d *Digraph) DepthFirstSearch(source Vertex, target Vertex) bool {
@@ -108,32 +107,30 @@ func (d *Digraph) DepthFirstSearch(source Vertex, target Vertex) bool {
 	d.m.Lock()
 	defer d.m.Unlock()
 
-	// Clear discovery map
-	discovered = map[Vertex]bool{}
+	// Generate a set of locations which have been visited
+	discovered := set.New()
 
 	// Begin recursive Depth-First Search, looking for all vertices reachable from source
-	d.dfs(source)
+	d.dfs(discovered, source)
 
 	// Check if target was discovered during Depth-First Search
-	result := discovered[target]
+	result := discovered.Has(target)
 
-	// Clear discovery map, return result
-	discovered = map[Vertex]bool{}
 	return result
 }
 
 // dfs implements a recursive Depth-First Search algorithm
-func (d *Digraph) dfs(target Vertex) {
+func (d *Digraph) dfs(discovered *set.Set, target Vertex) {
 	// Get the adjacency list for this vertex
 	adjList := d.adjList[target]
 
 	// Check all adjacent vertices
 	for _, v := range adjList.Adjacent() {
 		// Check if vertex has not been discovered
-		if !discovered[v] {
+		if !discovered.Has(v) {
 			// Mark it as discovered, recursively continue traversal
-			discovered[v] = true
-			d.dfs(v)
+			discovered.Add(v)
+			d.dfs(discovered, v)
 		}
 	}
 }
@@ -170,9 +167,6 @@ func (d *Digraph) HasEdge(source Vertex, target Vertex) bool {
 	return false
 }
 
-// printed maps out which vertices have been printed already
-var printed map[Vertex]bool
-
 // Print displays a printed "tree" of the digraph to the console
 func (d *Digraph) Print(root Vertex, all bool) (string, error) {
 	// Lock completely during print process
@@ -184,20 +178,17 @@ func (d *Digraph) Print(root Vertex, all bool) (string, error) {
 		return "", ErrVertexNotExists
 	}
 
-	// Clear printed map
-	printed = map[Vertex]bool{}
+	// Track locations which have already been printed
+	printed := set.New()
 
 	// Begin recursive printing at the specified root vertex
-	tree := d.printRecursive(root, "", all)
-
-	// Clear printed map
-	printed = map[Vertex]bool{}
+	tree := d.printRecursive(printed, root, "", all)
 
 	return tree, nil
 }
 
 // printRecursive handles the printing of each vertex in "tree" form
-func (d *Digraph) printRecursive(vertex Vertex, prefix string, all bool) string {
+func (d *Digraph) printRecursive(printed *set.Set, vertex Vertex, prefix string, all bool) string {
 	// Print the current vertex
 	str := fmt.Sprintf("%s - %v\n", prefix, vertex)
 
@@ -209,20 +200,20 @@ func (d *Digraph) printRecursive(vertex Vertex, prefix string, all bool) string 
 	for i, v := range adjacent {
 		// If not printing all, skip vertices which have already been printed
 		if !all {
-			if printed[v] {
+			if printed.Has(v) {
 				continue
 			}
 
 			// Mark new ones as printed
-			printed[v] = true
+			printed.Add(v)
 		}
 
 		// If last iteration, don't add a pipe character
 		if i == len(adjacent)-1 {
-			str = str + d.printRecursive(v, prefix+"    ", all)
+			str = str + d.printRecursive(printed, v, prefix+"    ", all)
 		} else {
 			// Add pipe character to show multiple items belong to same parent
-			str = str + d.printRecursive(v, prefix+"   |", all)
+			str = str + d.printRecursive(printed, v, prefix+"   |", all)
 		}
 	}
 
